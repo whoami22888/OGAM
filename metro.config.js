@@ -48,6 +48,8 @@ const notesPackagePath = path.resolve(sharedRoot, 'packages/notes');
 // @offgrid/notes-editor: the Notes Page editor, prebuilt as one HTML page for the WebView.
 const notesEditorPackagePath = path.resolve(sharedRoot, 'packages/notes-editor');
 const sharedNodeModulesPath = path.resolve(sharedRoot, 'node_modules');
+// Vendored stubs have no sibling node_modules; official ../shared checkouts may.
+const sharedNodeModulesExists = fs.existsSync(sharedNodeModulesPath);
 // A git worktree links each package to the main checkout (scripts/link-worktree-deps.sh). Metro
 // indexes files by their real path, so it must also watch the folder those links point into.
 const linkedNodeModulesPaths = (() => {
@@ -58,9 +60,13 @@ const linkedNodeModulesPaths = (() => {
   return real === own ? [] : [real];
 })();
 const syncRuntimeModules = {
-  '@noble/hashes/hkdf': path.resolve(sharedNodeModulesPath, '@noble/hashes/hkdf.js'),
-  '@noble/hashes/hmac': path.resolve(sharedNodeModulesPath, '@noble/hashes/hmac.js'),
-  '@noble/hashes/sha256': path.resolve(sharedNodeModulesPath, '@noble/hashes/sha256.js'),
+  ...(sharedNodeModulesExists
+    ? {
+        '@noble/hashes/hkdf': path.resolve(sharedNodeModulesPath, '@noble/hashes/hkdf.js'),
+        '@noble/hashes/hmac': path.resolve(sharedNodeModulesPath, '@noble/hashes/hmac.js'),
+        '@noble/hashes/sha256': path.resolve(sharedNodeModulesPath, '@noble/hashes/sha256.js'),
+      }
+    : {}),
   // Writing's ESM build (what package exports pick through node_modules/@offgrid/writing) loads its
   // dictionary with import(), a lazy bundle in dev that the phone requests at a `../shared/…` URL
   // Metro cannot serve: spelling went silent. The CJS build requires the chunk, so it is bundled.
@@ -81,13 +87,16 @@ const config = {
     notesEditorPackagePath,
     uiPackagePath,
     designPackagePath,
-    sharedNodeModulesPath,
+    ...(sharedNodeModulesExists ? [sharedNodeModulesPath] : []),
     ...linkedNodeModulesPaths,
   ],
   resolver: {
     // When resolving modules from outside the project root (i.e. @offgrid/pro),
     // Metro falls back here so @babel/runtime and all other peer deps are found.
-    nodeModulesPaths: [path.resolve(__dirname, 'node_modules'), sharedNodeModulesPath],
+    nodeModulesPaths: [
+      path.resolve(__dirname, 'node_modules'),
+      ...(sharedNodeModulesExists ? [sharedNodeModulesPath] : []),
+    ],
     resolveRequest: (context, moduleName, platform) => {
       const syncRuntimeModule = syncRuntimeModules[moduleName];
       if (syncRuntimeModule) {

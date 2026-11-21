@@ -618,7 +618,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = ai.offgridmobile.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.jarvisliquidagent.app.debug;
 				PRODUCT_NAME = OffgridMobile;
 				SWIFT_OBJC_BRIDGING_HEADER = "OffgridMobile/OffgridMobile-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -650,7 +650,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = ai.offgridmobile;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.jarvisliquidagent.app;
 				PRODUCT_NAME = OffgridMobile;
 				SWIFT_OBJC_BRIDGING_HEADER = "OffgridMobile/OffgridMobile-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -670,7 +670,7 @@
 				INFOPLIST_FILE = ImproveShare/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 0.0.124;
-				PRODUCT_BUNDLE_IDENTIFIER = ai.offgridmobile.dev.ImproveShare;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.jarvisliquidagent.app.debug.ImproveShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -832,7 +832,7 @@
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/OffgridMobile.app/OffgridMobile";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ai.offgridmobile.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.jarvisliquidagent.app.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUNDLE_LOADER)";
@@ -846,7 +846,7 @@
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/OffgridMobile.app/OffgridMobile";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ai.offgridmobile.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.jarvisliquidagent.app.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUNDLE_LOADER)";
@@ -865,7 +865,7 @@
 				INFOPLIST_FILE = ImproveShare/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 0.0.124;
-				PRODUCT_BUNDLE_IDENTIFIER = ai.offgridmobile.ImproveShare;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.jarvisliquidagent.app.ImproveShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;

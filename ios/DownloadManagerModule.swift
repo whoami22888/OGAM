@@ -222,7 +222,7 @@ class DownloadManagerModule: RCTEventEmitter {
   /// is closed by the system. Its tasks are keyed `taskIdentifier + backgroundKeyOffset`, since each
   /// session numbers its tasks from 1.
   static var backgroundSession: URLSession?
-  static let backgroundIdentifier = "ai.offgridmobile.model-downloads"
+  static let backgroundIdentifier = "ai.jarvisliquidagent.app.model-downloads"
   static let backgroundKeyOffset = 1 << 40
   /// The handler iOS gives the app when it wakes it for background download events.
   static var backgroundEventsCompletionHandler: (() -> Void)?

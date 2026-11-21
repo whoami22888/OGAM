@@ -92,7 +92,7 @@ android {
     externalNativeBuild { cmake { path "src/main/cpp/CMakeLists.txt"; version "3.22.1" } }
     sourceSets.main.assets.srcDir("../../.video-build/hexagon-assets")
     defaultConfig {
-        applicationId "ai.offgridmobile"
+        applicationId "ai.jarvisliquidagent.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1794999733
@@ -138,7 +138,8 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            applicationIdSuffix ".dev"
+            // No applicationIdSuffix: this fork must not install as ai.offgridmobile.dev
+            // (that would collide with an official Off Grid AI debug build).
         }
         release {
             signingConfig signingConfigs.release.storeFile ? signingConfigs.release : signingConfigs.debug

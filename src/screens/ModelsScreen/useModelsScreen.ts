@@ -137,6 +137,9 @@ export function useModelsScreen() {
   };
 
   const handleImportLocalModel = async () => {
+    // This fork never paywalls adding a local GGUF (or zip / LiteRT file).
+    // Official Off Grid AI may gate this in the closed-source Pro package;
+    // core leaves the picker ungated and this branch keeps it that way.
     if (isImporting || isPickingRef.current) return;
     isPickingRef.current = true;
     setIsImporting(true);

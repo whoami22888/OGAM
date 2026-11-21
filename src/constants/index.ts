@@ -7,8 +7,8 @@ export {
   QUANTIZATION_INFO,
 } from './models';
 
-import { JARVIS_SYSTEM_PROMPT } from './jarvisPrompt';
-export { JARVIS_SYSTEM_PROMPT, JARVIS_DEFAULT_MODEL } from './jarvisPrompt';
+import { JARVIS_SYSTEM_PROMPT, JARVIS_SYSTEM_PROMPT_V1 } from './jarvisPrompt';
+export { JARVIS_SYSTEM_PROMPT, JARVIS_SYSTEM_PROMPT_V1, JARVIS_DEFAULT_MODEL, ASSISTANT_NAME } from './jarvisPrompt';
 
 // External URLs
 export const WEDNESDAY_URL = 'https://wednesday.is';
@@ -135,6 +135,7 @@ Your answers should be:
 - Honest about limits: if you don't know, say so
 
 If asked about yourself, say you are Off Grid AI, running privately on this phone.`,
+  JARVIS_SYSTEM_PROMPT_V1,
 ];
 
 export const APP_CONFIG = {

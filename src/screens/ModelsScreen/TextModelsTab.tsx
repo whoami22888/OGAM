@@ -535,8 +535,7 @@ export const TextModelsTab: React.FC<Props> = (props) => {
           <Icon name="sliders" size={14} color={filterToggleActive ? colors.primary : colors.textMuted} />
           {hasNonSortActiveFilters && <View style={styles.filterDot} />}
         </TouchableOpacity>
-        {!onboarding && (
-          <TouchableOpacity
+        <TouchableOpacity
             style={styles.filterToggle}
             onPress={handleImportLocalModel}
             disabled={isImporting}
@@ -546,7 +545,6 @@ export const TextModelsTab: React.FC<Props> = (props) => {
           >
             <Icon name="upload" size={14} color={colors.textMuted} />
           </TouchableOpacity>
-        )}
       </View>
 
       {filterState.expandedDimension === 'sort' && <SortPanel filterState={filterState} setSortOption={setSortOption} styles={styles} colors={colors} />}

@@ -419,7 +419,10 @@ function App() {
       // empty — without this scan a freshly launched app shows an already-installed
       // model (e.g. base.en) as "Download" and re-fetches the full file. Fire-and-
       // forget; the Models screen also refreshes on focus.
-      useWhisperStore.getState().refreshPresentModels();
+      useWhisperStore
+        .getState()
+        .refreshPresentModels()
+        .catch((err: unknown) => logger.error('[App] Whisper model scan failed', err));
 
       // Models are intentionally NOT warmed at boot — a native model load is heavy
       // and contends with startup, leaving the whole app sluggish in that window.

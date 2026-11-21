@@ -48,7 +48,9 @@ const previous =
 if (typeof ErrorUtils !== 'undefined' && ErrorUtils.setGlobalHandler) {
   ErrorUtils.setGlobalHandler((error, isFatal) => {
     console.error('Jarvis uncaught JS error', error, 'fatal=', isFatal);
-    if (typeof previous === 'function') {
+    // Release: the default handler reports to ExceptionsManager, which tears
+    // down ReactHost and leaves a blank screen. Log only. Keep the redbox in dev.
+    if (typeof __DEV__ !== 'undefined' && __DEV__ && typeof previous === 'function') {
       try {
         previous(error, false);
       } catch (e) {

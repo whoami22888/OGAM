@@ -408,3 +408,101 @@ module.exports = {
   bytesToHex,
   NoopTransport,
 };
+
+
+// Additional named exports required by OGAM src. Assigned on module.exports (not
+// the stale `exports` alias) so they join the existing export object.
+class CompositeDiscoveryService {
+  constructor() {}
+  start() { return Promise.resolve(); }
+  stop() { return Promise.resolve(); }
+  add() {}
+  remove() {}
+}
+class DiscoveryOrchestrator {
+  constructor() {}
+  start() { return Promise.resolve(); }
+  stop() { return Promise.resolve(); }
+  scan() { return Promise.resolve([]); }
+}
+class IncrementalChecksum {
+  constructor() { this._n = 0; }
+  update() { return this; }
+  digest() { return ""; }
+  hex() { return ""; }
+}
+class MultiTransportBridge {
+  constructor() {}
+  start() { return Promise.resolve(); }
+  stop() { return Promise.resolve(); }
+  send() { return Promise.resolve(false); }
+}
+
+module.exports.CompositeDiscoveryService = CompositeDiscoveryService;
+module.exports.DiscoveryOrchestrator = DiscoveryOrchestrator;
+module.exports.IncrementalChecksum = IncrementalChecksum;
+module.exports.MultiTransportBridge = MultiTransportBridge;
+
+module.exports.BLOB_FRAME_BYTES = 65536;
+module.exports.BLOB_TOKEN_TTL_MS = 300000;
+module.exports.CHUNK_SIZE = 65536;
+module.exports.OFFGRID_SYNC_PORT = 17342;
+module.exports.KNOWLEDGE_DOCUMENT_ENTITY = "knowledge_document";
+module.exports.NOTE_FILE_ENTITY = "note_file";
+module.exports.SHARED_FILE_ENTITY = "shared_file";
+module.exports.TASK_CONTROL_ENTITY = "task_control";
+module.exports.TASK_LAUNCH_ENTITY = "task_launch";
+module.exports.TASK_RUN_ENTITY = "task_run";
+module.exports.WRITING_LEARNED_ENTITY = "writing_learned";
+module.exports.WRITING_PREFERENCE_ENTITY = "writing_preference";
+module.exports.WRITING_STYLE_GUIDE_ENTITY = "writing_style_guide";
+module.exports.PROMPT_ENHANCEMENT_REASONING_LABEL = "Reasoning";
+module.exports.PROMPT_ENHANCEMENT_STATUS = {
+  idle: "idle",
+  running: "running",
+  done: "done",
+  failed: "failed",
+};
+
+module.exports.appendPlace = function appendPlace(list, item) {
+  const arr = Array.isArray(list) ? list.slice() : [];
+  arr.push(item);
+  return arr;
+};
+module.exports.blobKeyBase64 = function blobKeyBase64() { return ""; };
+module.exports.chatListPreviewLine = function chatListPreviewLine(text) {
+  return String(text || "").replace(/\s+/g, " ").trim().slice(0, 140);
+};
+module.exports.chatQueueHeld = function chatQueueHeld() { return false; };
+module.exports.chatQueueHoldAfter = function chatQueueHoldAfter(value) { return value; };
+module.exports.chatStreamPhaseIsStatus = function chatStreamPhaseIsStatus() { return false; };
+module.exports.chatStreamPhaseLabel = function chatStreamPhaseLabel(phase) { return String(phase || ""); };
+module.exports.chatStreamPreviewHasMessageBody = function chatStreamPreviewHasMessageBody() { return false; };
+module.exports.chatStreamPreviewRows = function chatStreamPreviewRows() { return []; };
+module.exports.chatThread = function chatThread(messages) { return Array.isArray(messages) ? messages : []; };
+module.exports.checksumFromSha512Hex = function checksumFromSha512Hex(hex) { return String(hex || ""); };
+module.exports.completeChatStreamTool = function completeChatStreamTool(row) { return row; };
+module.exports.createBlobMaterial = function createBlobMaterial() { return {}; };
+module.exports.createKnowledgeDocumentStateFields = function createKnowledgeDocumentStateFields() { return {}; };
+module.exports.createSharedFileStateFields = function createSharedFileStateFields() { return {}; };
+module.exports.createWritingLearnedFields = function createWritingLearnedFields() { return {}; };
+module.exports.isRuntimeOnlyMessage = function isRuntimeOnlyMessage() { return false; };
+module.exports.isSupportingChatContext = function isSupportingChatContext() { return false; };
+module.exports.markQueuedSendNow = function markQueuedSendNow(value) { return value; };
+module.exports.neighbourVersion = function neighbourVersion() { return 0; };
+module.exports.ogamModelTransferBlocker = function ogamModelTransferBlocker() { return null; };
+module.exports.parentOfVersion = function parentOfVersion() { return null; };
+module.exports.preprocessChatMarkdown = function preprocessChatMarkdown(text) { return String(text || ""); };
+module.exports.projectPersonalMeshActivationFailure = function projectPersonalMeshActivationFailure(value) { return value; };
+module.exports.projectSyncedMessageTurn = function projectSyncedMessageTurn(value) { return value; };
+module.exports.readGatewayComputerId = function readGatewayComputerId() { return null; };
+module.exports.reasoning = function reasoning(value) { return value; };
+module.exports.safeChatExternalUrl = function safeChatExternalUrl(url) { return url || null; };
+module.exports.serializeSyncedMessageContext = function serializeSyncedMessageContext() { return ""; };
+module.exports.splitInlineReasoning = function splitInlineReasoning(text) {
+  const raw = String(text || "");
+  return { text: raw, reasoning: "", visible: raw };
+};
+module.exports.startChatStreamTool = function startChatStreamTool(row) { return row; };
+module.exports.takeNextQueued = function takeNextQueued() { return null; };
+module.exports.writingLearnedEntityId = function writingLearnedEntityId(id) { return String(id || ""); };

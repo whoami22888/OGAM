@@ -1,14 +1,14 @@
 package ai.offgridmobile
 
 import android.app.Application
+import android.util.Log
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
-import com.facebook.react.common.JavascriptException
+import com.facebook.react.ReactPackage
 import com.facebook.react.common.assets.ReactFontManager
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
-import ai.offgridmobile.crash.JsCrashFrames
 import ai.offgridmobile.download.DownloadManagerPackage
 import ai.offgridmobile.localdream.LocalDreamPackage
 import ai.offgridmobile.pdf.PDFExtractorPackage
@@ -33,39 +33,61 @@ class MainApplication : Application(), ReactApplication {
       context = applicationContext,
       packageList =
         PackageList(this).packages.apply {
-          // Packages that cannot be autolinked yet can be added manually here, for example:
-          add(DownloadManagerPackage())
-          add(LocalDreamPackage())
-          add(ai.offgridmobile.video.VideoGenerationPackage())
-          add(PDFExtractorPackage())
-          add(LiteRTPackage())
-          add(DeviceMemoryPackage())
-          add(ProblemReportPackage())
-          add(MediaSharePackage())
-          add(SyncClipboardPackage())
-          add(ScribeEntryPackage())
-          add(SyncDirectorySourcePackage())
-          add(MeshResidencyPackage())
-          add(SyncScreenshotPackage())
-          add(SyncDownloadsPackage())
-          add(BlobChannelPackage())
-          add(EnginePackPackage())
+          // A constructor or System.loadLibrary failure in one extra package
+          // must not take down llama.rn chat. Autolinked packages (llama.rn,
+          // etc.) stay on the list; these are the manually added ones.
+          addSafely("DownloadManager") { DownloadManagerPackage() }
+          addSafely("LocalDream") { LocalDreamPackage() }
+          if (!BuildConfig.SKIP_VIDEO) {
+            // Official video JNI (Hexagon/sd.cpp). The Jarvis fork skips this:
+            // registering VideoGenerationPackage would System.loadLibrary
+            // ("offgrid_video") during RN startup and kill the process if the
+            // stub .so cannot be mapped.
+            addSafely("VideoGeneration") { ai.offgridmobile.video.VideoGenerationPackage() }
+          }
+          addSafely("PDFExtractor") { PDFExtractorPackage() }
+          addSafely("LiteRT") { LiteRTPackage() }
+          addSafely("DeviceMemory") { DeviceMemoryPackage() }
+          addSafely("ProblemReport") { ProblemReportPackage() }
+          addSafely("MediaShare") { MediaSharePackage() }
+          addSafely("SyncClipboard") { SyncClipboardPackage() }
+          addSafely("ScribeEntry") { ScribeEntryPackage() }
+          addSafely("SyncDirectorySource") { SyncDirectorySourcePackage() }
+          addSafely("MeshResidency") { MeshResidencyPackage() }
+          addSafely("SyncScreenshot") { SyncScreenshotPackage() }
+          addSafely("SyncDownloads") { SyncDownloadsPackage() }
+          addSafely("BlobChannel") { BlobChannelPackage() }
+          addSafely("EnginePack") { EnginePackPackage() }
         },
-      // A fatal JS error still crashes the app, as React Native's default does, but with its JS
-      // stack as frames so Play Console can show and group it.
+      // Do not rethrow: a fatal JS error on a release sideload otherwise
+      // presents as "Jarvis_liquid_agent keeps stopping" with no UI.
       exceptionHandler = { error ->
-        throw if (error is JavascriptException) JsCrashFrames.withJsFrames(error) else error
+        Log.e(TAG, "Unhandled JS exception (process kept alive)", error)
       },
     )
   }
 
   override fun onCreate() {
     super.onCreate()
-    // Before React Native: llama.rn reads the engine-pack folder when it first loads its libraries.
     EnginePackBoot.apply(this)
-    // The brand faces as font families, so fontFamily "Geist" + fontWeight picks the right file, as on iOS.
-    ReactFontManager.getInstance().addCustomFont(this, "Geist", R.font.geist)
-    ReactFontManager.getInstance().addCustomFont(this, "Geist Mono", R.font.geist_mono)
+    try {
+      ReactFontManager.getInstance().addCustomFont(this, "Geist", R.font.geist)
+      ReactFontManager.getInstance().addCustomFont(this, "Geist Mono", R.font.geist_mono)
+    } catch (t: Throwable) {
+      Log.e(TAG, "Custom font registration failed", t)
+    }
     loadReactNative(this)
+  }
+
+  private fun MutableList<ReactPackage>.addSafely(name: String, factory: () -> ReactPackage) {
+    try {
+      add(factory())
+    } catch (t: Throwable) {
+      Log.e(TAG, "Skipping native package $name so chat can still start", t)
+    }
+  }
+
+  private companion object {
+    const val TAG = "JarvisApp"
   }
 }

@@ -59,7 +59,19 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      return <ErrorFallback onReset={this.reset} />;
+      try {
+        return <ErrorFallback onReset={this.reset} />;
+      } catch (e) {
+        // Theme/tokens must never prevent a visible recovery screen.
+        return (
+          <View style={{ flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#0B0F0E' }}>
+            <Text style={{ color: '#F9FAFB', fontSize: 20 }}>Something went wrong</Text>
+            <Text style={{ color: '#D1D5DB', marginTop: 12 }} onPress={this.reset}>
+              Tap here to try again. Your chats and models are saved on this device.
+            </Text>
+          </View>
+        );
+      }
     }
     return this.props.children;
   }

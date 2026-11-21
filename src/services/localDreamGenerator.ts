@@ -43,7 +43,11 @@ class LocalDreamGeneratorService {
 
   private getEmitter(): NativeEventEmitter {
     if (!this.eventEmitter) {
-      this.eventEmitter = new NativeEventEmitter(this.usingSD ? SDModule : DiffusionModule);
+      const mod = this.usingSD ? SDModule : DiffusionModule;
+      if (!mod) {
+        throw new Error('Image/video native module is not available in this build.');
+      }
+      this.eventEmitter = new NativeEventEmitter(mod);
     }
     return this.eventEmitter;
   }

@@ -16,7 +16,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class VideoGenerationModule(private val context: ReactApplicationContext) : ReactContextBaseJavaModule(context), LifecycleEventListener {
     companion object {
-        init { System.loadLibrary("offgrid_video") }
+        init {
+            // Never let a missing/bad stub .so kill process startup.
+            try {
+                System.loadLibrary("offgrid_video")
+            } catch (t: Throwable) {
+                android.util.Log.e("VideoGeneration", "liboffgrid_video failed to load; video is unavailable", t)
+            }
+        }
         // JNI owns one process-wide runtime, even when React recreates its bridge.
         private val busy = AtomicBoolean(false)
         @Volatile private var activeVideo: VideoGenerationModule? = null

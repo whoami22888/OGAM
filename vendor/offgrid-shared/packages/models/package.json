@@ -1,0 +1,8 @@
+{
+  "name": "@offgrid/models",
+  "version": "0.0.1-jarvis-stub",
+  "description": "Vendored stub of the private off-grid-ai/shared package, enough for local GGUF chat.",
+  "main": "dist/index.js",
+  "type": "commonjs",
+  "license": "MIT"
+}

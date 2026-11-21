@@ -1,5 +1,14 @@
 # Jarvis_liquid_agent on a Galaxy S23 — build and install
 
+
+> **Build without the private monorepo:** this fork vendors stub implementations
+> of the private `@offgrid/*` packages under `vendor/offgrid-shared/` (see that
+> README). `npm install` resolves `file:./vendor/offgrid-shared/packages/*`.
+> Core on-device GGUF chat (model import, LFM3, Jarvis system prompt) is the
+> supported path. Sync/RAG/speech/notes/writing are no-ops. The LFM3 GGUF is
+> **not** bundled — import it on-device after install.
+
+
 This branch turns [Off Grid AI (OGAM)](https://github.com/off-grid-ai/OGAM) into a standalone phone-native app named **Jarvis_liquid_agent**: local GGUF chat, the coworker persona, and the existing on-device tools. No Linxr, no VM, no Docker, no terminal once the APK is installed.
 
 | | This fork | Official Off Grid AI |

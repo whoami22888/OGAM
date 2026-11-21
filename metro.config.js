@@ -15,8 +15,18 @@ const proExists = fs.existsSync(path.resolve(proPackagePath, 'package.json'));
 // Metro indexes files by their real path, so a ../shared that is a symlink (a git worktree beside
 // the checkout links to the one shared clone) is resolved first, or no alias below would be found.
 const sharedRoot = (() => {
-  const linked = path.resolve(__dirname, '../shared');
-  return fs.existsSync(linked) ? fs.realpathSync(linked) : linked;
+  // Prefer a sibling ../shared checkout when present (official monorepo).
+  // Fall back to the in-repo vendored stubs so a standalone clone can build.
+  const candidates = [
+    path.resolve(__dirname, '../shared'),
+    path.resolve(__dirname, 'vendor/offgrid-shared'),
+  ];
+  for (const cand of candidates) {
+    if (fs.existsSync(path.join(cand, 'packages/models'))) {
+      return fs.realpathSync(cand);
+    }
+  }
+  return candidates[candidates.length - 1];
 })();
 const syncPackagePath = path.resolve(sharedRoot, 'packages/sync');
 const automationPackagePath = path.resolve(sharedRoot, 'packages/automation');

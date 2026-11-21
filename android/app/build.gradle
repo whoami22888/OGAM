@@ -74,6 +74,9 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
+// Jarvis_liquid_agent: skip the Docker/Hexagon video runtime unless explicitly re-enabled.
+def skipVideo = project.findProperty('offgrid.skipVideo')?.toString() != 'false'
+
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -90,6 +93,7 @@ android {
     }
 
     externalNativeBuild { cmake { path "src/main/cpp/CMakeLists.txt"; version "3.22.1" } }
+    // skipVideo is defined at script scope below the plugins (Jarvis_liquid_agent).
     sourceSets.main.assets.srcDir("../../.video-build/hexagon-assets")
     defaultConfig {
         applicationId "ai.jarvisliquidagent.app"
@@ -97,6 +101,9 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1794999733
         versionName "0.0.125"
+        if (skipVideo) {
+            externalNativeBuild { cmake { arguments "-DOFFGRID_SKIP_VIDEO=ON" } }
+        }
         // An engine pack fits only the llama.rn Java/JS bridge this APK carries (see enginepack/).
         def llamaRn = new groovy.json.JsonSlurper().parse(file("../../node_modules/llama.rn/package.json"))
         buildConfigField "String", "LLAMA_ENGINE_BRIDGE", "\"${llamaRn.offgrid?.engineBridge ?: ''}\""
@@ -208,22 +215,25 @@ dependencies {
 
 // Native video setup is shared by command-line, IDE, and CI builds.
 // Configure tasks need the source tree before CMake evaluates it.
+// Jarvis_liquid_agent defaults to skipping this (no Docker/Hexagon SDK).
 def videoRoot = rootProject.projectDir.parentFile
-def prepareVideoRuntime = tasks.register("prepareVideoRuntime", Exec) {
-    workingDir videoRoot
-    commandLine "bash", new File(videoRoot, "scripts/prepare-video-runtime.sh").absolutePath, "--android"
-    inputs.files(fileTree(new File(videoRoot, "scripts/video")), new File(videoRoot, "scripts/prepare-video-runtime.sh"))
-    outputs.files(new File(videoRoot, ".video-build/runtime-ready"), new File(videoRoot, ".video-build/shaderc/bin/glslc"),
-        new File(videoRoot, ".video-build/hexagon-runtime/htp_iface_stub.c"), new File(videoRoot, ".video-build/hexagon-runtime/htp_iface.h"))
-    outputs.dir(new File(videoRoot, ".video-build/hexagon-assets/video-hexagon"))
-}
-// JVM unit tests never load the native video engine. Building it needs the shader compiler and
-// the Hexagon SDK, so a unit-test-only invocation (CI's Android test step) skips it.
-def unitTestsOnly = !gradle.startParameter.taskNames.isEmpty() &&
-    gradle.startParameter.taskNames.every { it.toLowerCase().contains("unittest") }
-tasks.configureEach { task ->
-    if (unitTestsOnly) return
-    if (task.name.startsWith("configureCMake") || (task.name.startsWith("merge") && task.name.endsWith("Assets"))) task.dependsOn(prepareVideoRuntime)
-    // The release JS bundle reads the project root, where the video runtime writes .video-build.
-    if (task.name.startsWith("createBundle") && task.name.endsWith("JsAndAssets")) task.mustRunAfter(prepareVideoRuntime)
+if (!skipVideo) {
+    def prepareVideoRuntime = tasks.register("prepareVideoRuntime", Exec) {
+        workingDir videoRoot
+        commandLine "bash", new File(videoRoot, "scripts/prepare-video-runtime.sh").absolutePath, "--android"
+        inputs.files(fileTree(new File(videoRoot, "scripts/video")), new File(videoRoot, "scripts/prepare-video-runtime.sh"))
+        outputs.files(new File(videoRoot, ".video-build/runtime-ready"), new File(videoRoot, ".video-build/shaderc/bin/glslc"),
+            new File(videoRoot, ".video-build/hexagon-runtime/htp_iface_stub.c"), new File(videoRoot, ".video-build/hexagon-runtime/htp_iface.h"))
+        outputs.dir(new File(videoRoot, ".video-build/hexagon-assets/video-hexagon"))
+    }
+    def unitTestsOnly = !gradle.startParameter.taskNames.isEmpty() &&
+        gradle.startParameter.taskNames.every { it.toLowerCase().contains("unittest") }
+    tasks.configureEach { task ->
+        if (unitTestsOnly) return
+        if (task.name.startsWith("configureCMake") || (task.name.startsWith("merge") && task.name.endsWith("Assets"))) task.dependsOn(prepareVideoRuntime)
+        if (task.name.startsWith("createBundle") && task.name.endsWith("JsAndAssets")) task.mustRunAfter(prepareVideoRuntime)
+    }
+} else {
+    // Keep the assets source set valid when the Hexagon pack was never built.
+    file("../../.video-build/hexagon-assets").mkdirs()
 }

@@ -13,6 +13,14 @@
 > building video later: `./gradlew :app:assembleDebug -Poffgrid.skipVideo=false`.
 
 
+
+> **Sideload a *release* APK, not debug.** A debug build looks for a Metro
+> bundler on the network and will red-screen on a phone with no dev server
+> (`'OffgridMobile' has not been registered`). `./gradlew :app:assembleRelease`
+> embeds `assets/index.android.bundle`. The React Native component name stays
+> `OffgridMobile` (MainActivity + `app.json` `name`); the launcher label is
+> `Jarvis_liquid_agent`.
+
 This branch turns [Off Grid AI (OGAM)](https://github.com/off-grid-ai/OGAM) into a standalone phone-native app named **Jarvis_liquid_agent**: local GGUF chat, the coworker persona, and the existing on-device tools. No Linxr, no VM, no Docker, no terminal once the APK is installed.
 
 | | This fork | Official Off Grid AI |

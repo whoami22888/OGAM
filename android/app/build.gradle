@@ -118,11 +118,18 @@ android {
             keyPassword 'android'
         }
         release {
+            // Sideloadable release APK: reuse the Android debug keystore unless
+            // a real Play upload keystore is provided via OFFGRID_UPLOAD_STORE_FILE.
             if (project.hasProperty('OFFGRID_UPLOAD_STORE_FILE')) {
                 storeFile file(OFFGRID_UPLOAD_STORE_FILE)
                 storePassword OFFGRID_UPLOAD_STORE_PASSWORD
                 keyAlias OFFGRID_UPLOAD_KEY_ALIAS
                 keyPassword OFFGRID_UPLOAD_KEY_PASSWORD
+            } else {
+                storeFile file('debug.keystore')
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
             }
         }
     }
@@ -149,7 +156,7 @@ android {
             // (that would collide with an official Off Grid AI debug build).
         }
         release {
-            signingConfig signingConfigs.release.storeFile ? signingConfigs.release : signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

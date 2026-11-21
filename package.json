@@ -168,5 +168,10 @@
     "@expo/plist": {
       "xmldom": "npm:@xmldom/xmldom@0.8.15"
     }
+  },
+  "allowScripts": {
+    "@ogai/llama.rn@0.13.0-b12415": true,
+    "react-native-executorch@0.11.0": true,
+    "@parcel/watcher@2.6.0": true
   }
 }

@@ -1,4 +1,5 @@
 import { CATALOG, type MobileTextCatalogModel, type ModelEntry } from '@offgrid/models';
+import { JARVIS_DEFAULT_MODEL } from './jarvisPrompt';
 import { textModelBudget } from '../services/memoryBudget';
 import { registerBundledCatalog } from '../stores/modelCatalogStore';
 import { engineLoadsCatalogModel } from '../services/llamaEngineSupport';
@@ -43,7 +44,7 @@ const CATALOG_ORG_TO_FILTER_KEY: Record<string, string> = {
   Mistral: 'mistralai',
 };
 
-export const RECOMMENDED_MODELS: MobileTextCatalogModel[] = CATALOG.filter(offeredOnPhone).map(entry => ({
+const CATALOG_RECOMMENDED: MobileTextCatalogModel[] = CATALOG.filter(offeredOnPhone).map(entry => ({
   id: entry.id,
   name: entry.name,
   params: entry.params ?? 0,
@@ -57,10 +58,25 @@ export const RECOMMENDED_MODELS: MobileTextCatalogModel[] = CATALOG.filter(offer
   nonCommercial: entry.nonCommercial,
 }));
 // The bundled fallback: screens read it merged with the remote catalog (withRemoteCatalog('text', …)).
+// Jarvis default first so onboarding and the Models list lead with LFM3 1.7B on phone-class RAM.
+export const RECOMMENDED_MODELS: MobileTextCatalogModel[] = [
+  {
+    id: JARVIS_DEFAULT_MODEL.id,
+    name: JARVIS_DEFAULT_MODEL.name,
+    params: JARVIS_DEFAULT_MODEL.params,
+    description: JARVIS_DEFAULT_MODEL.description,
+    minRam: JARVIS_DEFAULT_MODEL.minRam,
+    type: JARVIS_DEFAULT_MODEL.type,
+    org: JARVIS_DEFAULT_MODEL.org,
+    isNew: JARVIS_DEFAULT_MODEL.isNew,
+  },
+  ...CATALOG_RECOMMENDED.filter(model => model.id !== JARVIS_DEFAULT_MODEL.id),
+];
 registerBundledCatalog('text', RECOMMENDED_MODELS);
 
 // Trending model families — one best-fit per family is shown as "trending"
 export const TRENDING_FAMILIES: Record<string, string[]> = {
+  jarvis: [JARVIS_DEFAULT_MODEL.id],
   minicpm5: ['openbmb/MiniCPM5-2B-GGUF'],
   gemma4: ['unsloth/gemma-4-E2B-it-GGUF', 'unsloth/gemma-4-E4B-it-GGUF'],
   qwen35: ['unsloth/Qwen3.5-0.8B-GGUF', 'unsloth/Qwen3.5-2B-GGUF', 'unsloth/Qwen3.5-9B-GGUF'],
@@ -80,6 +96,7 @@ export const MODEL_ORGS = [
   { key: 'HuggingFaceTB', label: 'HuggingFace' },
   { key: 'nvidia', label: 'NVIDIA' },
   { key: 'LiquidAI', label: 'Liquid AI' },
+  { key: 'AtomicChat', label: 'AtomicChat' },
 ];
 
 // Quantization levels and their properties
